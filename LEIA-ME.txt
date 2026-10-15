@@ -1,0 +1,22 @@
+MOKA: TOCA FANTASMA - KIT PARA GERAR O APK NO GITHUB (gratuito)
+
+Este kit compila o jogo como app Android usando o GitHub Actions.
+Você não precisa instalar nada no computador.
+
+1. Crie uma conta em https://github.com (se ainda não tiver).
+2. Crie um repositório novo, por exemplo "moka-toca-fantasma".
+3. Envie TODOS os arquivos desta pasta para o repositório,
+   incluindo a pasta escondida ".github".
+   Dica: no site do GitHub, use "Add file" > "Upload files" e arraste
+   o conteúdo da pasta. Se a pasta ".github" não subir pelo navegador,
+   crie o arquivo manualmente em "Add file" > "Create new file" com o
+   nome .github/workflows/gerar-apk.yml e cole o conteúdo do arquivo.
+4. Abra a aba "Actions" do repositório. A compilação começa sozinha
+   (ou clique em "Gerar APK" > "Run workflow").
+5. Quando ficar verde (uns 5 a 10 minutos), clique na execução e baixe
+   "moka-toca-fantasma-apk" em "Artifacts". Dentro do .zip está o .apk.
+6. No celular Android, abra o .apk e permita "instalar apps de fontes
+   desconhecidas" quando o Android pedir.
+
+Observação: este é um APK de teste (debug). Ele instala normalmente no
+celular, mas para publicar na Google Play é preciso um APK/AAB assinado.

@@ -1,0 +1,6 @@
+{
+  "appId": "com.moka.tocafantasma",
+  "appName": "Moka: Toca Fantasma",
+  "webDir": "www",
+  "android": { "backgroundColor": "#2a2346" }
+}

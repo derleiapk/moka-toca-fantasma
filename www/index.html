@@ -169,6 +169,13 @@ details.story p{margin-top:8px;font-size:14px}
 #bossBar{grid-column:1/-1;padding:4px 8px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--curse)}
 #bossBar .xbar i{background:#c8506e}
 .bitem .mb{grid-column:2;display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.credit{font-size:13px;color:var(--ink-soft);margin:-4px 0 0!important}
+#guide{grid-column:1/-1;justify-self:start;pointer-events:none;font-size:11px;max-width:100%;text-align:left;background:#e3f6e8;font-weight:500;justify-content:flex-start}
+.compass{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.compass div{background:var(--panel-hi);border:2px solid var(--edge);border-radius:6px;padding:4px;font-size:11px;line-height:1.25;text-align:center;min-height:44px}
+.compass div b{display:block;font-size:10px;color:var(--ink-soft);font-family:var(--f-num);text-transform:uppercase;font-weight:400}
+.compass .me{background:#fff4c2}
+.pbtn.on{box-shadow:0 1px 0 var(--edge);transform:translateY(2px);background:var(--gold)}
 @keyframes tin{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion: reduce){.toast{animation:none}}
 </style>
@@ -205,6 +212,7 @@ details.story p{margin-top:8px;font-size:14px}
   <div id="party" hidden></div>
   <div id="det" class="chip" hidden><i class="ico" id="detIco" data-ico="det1"></i><span id="detName">Detector</span><span id="led"></span></div>
   <button id="quest" class="chip" hidden><i class="ico" data-ico="star"></i><span id="questTxt"></span></button>
+  <div id="guide" class="chip" hidden><span id="guideTxt"></span></div>
   <div id="bossBar" class="panel" hidden><span id="bossName">Rei Fantasma</span><span class="xbar"><i id="bossFill"></i></span></div>
 </div>
 
@@ -228,6 +236,7 @@ details.story p{margin-top:8px;font-size:14px}
   <div class="card panel">
     <canvas id="cover" width="240" height="320" role="img" aria-label="Capa de Moka: Toca Fantasma com Moka, Nimbo, Amora e os fantasmas"></canvas>
     <h1 id="title" class="sr">Moka: Toca Fantasma</h1>
+    <p class="credit">Idealizado por <b>Bia Magalhães</b></p>
     <p>Quando o sol se põe, os fantasmas acordam. Moka, um coelhinho branco, decide que não vai mais se esconder.</p>
     <details class="story"><summary>Ler a história</summary>
       <p>Na Floresta Encantada, os coelhos viviam em paz entre tocas, cerquinhas e plantações de cenoura. Até que uma névoa roxa desceu das Terras Assombradas e o Rei Fantasma tomou a vila mais antiga da região.</p>
@@ -298,6 +307,9 @@ details.story p{margin-top:8px;font-size:14px}
     <div class="resgrid" id="bagRes"></div>
     <div class="sec">Missões</div>
     <div class="blist" id="bagMissions"></div>
+    <div class="sec">Bússola · para onde ir</div>
+    <div id="bagCompass" class="compass"></div>
+    <div class="blist" id="bagDirs"></div>
     <div class="sec">Armas · toque para equipar</div>
     <div class="blist" id="bagWeapons"></div>
     <div class="sec">Relíquias (3 abrem o Portão de Névoa)</div>
@@ -308,6 +320,7 @@ details.story p{margin-top:8px;font-size:14px}
     <div class="meter"><i id="bagCurse"></i></div>
     <p class="muted" id="bagGoal"></p>
     <div class="sec">Mapa explorado</div>
+    <div class="brow"><button id="mapS" class="pbtn tiny">Mapa simples</button><button id="mapD" class="pbtn tiny alt">Mapa detalhado</button></div>
     <canvas id="mapCv" width="480" height="360"></canvas>
     <div class="legend"><span><i style="background:#ff8fb0"></i>vila</span><span><i style="background:#a02040"></i>Coelhos Malvados</span><span><i style="background:#5a2a6a"></i>aldeia da névoa</span><span><i style="background:#fff3b0"></i>missão</span><span><i style="background:#b38cff"></i>foco de fantasmas</span><span><i style="background:#c8506e"></i>tenda malvada</span><span><i style="background:#5fb8a8"></i>bosque</span><span><i style="background:#f6b7c9"></i>balão</span><span><i style="background:#f2a5c3"></i>toca</span><span><i style="background:#8f86ab"></i>caverna</span><span><i style="background:#ffd27a"></i>sua toca</span><span><i style="background:#2f8f5a"></i>árvore gigante</span><span><i style="background:#ffe066"></i>relíquia</span><span><i style="background:#7a4fd1"></i>amaldiçoada</span><span><i style="background:#9fe0b0"></i>purificada</span></div>
     <button id="bagClose" class="pbtn alt">Voltar ao jogo</button>
@@ -319,7 +332,7 @@ details.story p{margin-top:8px;font-size:14px}
     <h2>Jogo pausado</h2>
     <p class="muted" id="pauseInfo"></p>
     <button id="pResume" class="pbtn mint">Continuar</button>
-    <div class="brow"><button id="pBag" class="pbtn alt">Mochila</button><button id="pSnd" class="pbtn alt">Som: sim</button></div>
+    <div class="brow"><button id="pBag" class="pbtn alt">Mochila</button><button id="pSnd" class="pbtn alt">Som: sim</button><button id="pGuide" class="pbtn alt">Guia: sim</button></div>
     <button id="pNew" class="pbtn">Nova floresta</button>
     <p class="muted">O progresso é salvo sozinho neste navegador.</p>
   </div>
@@ -679,7 +692,7 @@ function freshG(){return{inv:{wood:0,stone:2,herb:2,wool:0,crystal:0,honey:0,she
   clock:12,dayNum:1,nights:0,curse:100,kills:0,kp:0,won:false,playTime:0,sleeping:false,fainted:false,starveT:0,looted:0,decor:false,carry:null,gateOpen:false,
   relics:{favo:false,cristal:false,concha:false,esporo:false},gv:{state:'guarded',wave:1},
   land:0,missions:[],mid:0,track:0,kbt:{},chiefDay:{},chiefMet:{},postBoss:false,teams:0,mdone:0,wishDay:0,seenC:[],
-  powCd:{moka:0,nimbo:0,amora:0},radarT:0,shadowT:0,post:{stage:0,day:0},groves:[],vgrow:{},potions:0,rival:0,rivalTeam:false,escort:null,endSeq:null,fairyDay:0,
+  guide:true,mapMode:'s',powCd:{moka:0,nimbo:0,amora:0},radarT:0,shadowT:0,post:{stage:0,day:0},groves:[],vgrow:{},potions:0,rival:0,rivalTeam:false,escort:null,endSeq:null,fairyDay:0,
   friends:{nimbo:{met:false,joined:false,q:0},amora:{met:false,joined:false,q:0}},biomes:[true,false,false,false,false,false,false,false,false,false]}}
 const relicCount=()=>Object.values(G.relics).filter(Boolean).length;
 function setG(x,y,g){if(x>=0&&y>=0&&x<MW&&y<MH)ground[y*MW+x]=g}
@@ -986,7 +999,7 @@ function findInteract(){
   const consider=(kind,ref,x,y,extra=0)=>{const d=Math.hypot(x-px,y-py)-extra;if(d<bd){bd=d;best={kind,ref}}};
   const cx=Math.floor(px/T),cy=Math.floor(py/T);
   for(let y=cy-2;y<=cy+2;y++)for(let x=cx-2;x<=cx+2;x++){if(x<0||y<0||x>=MW||y>=MH)continue;const o=objGrid[y*MW+x];if(!o||SKIPI.has(o.t))continue;if((o.t==='xmark'||o.t==='cage')&&!missionOf(o))continue;
-    consider('obj',o,ocx(o),ocy(o),o.t==='cave'||o.t==='shrine'||o.t==='trial'?7:o.t==='giant'||o.t==='gate'||o.t==='windmill'||o.t==='balloon'?6:o.t==='stall'?3:NS.has(o.t)?-2:0)}
+    consider('obj',o,ocx(o),ocy(o),o.t==='cave'||o.t==='shrine'||o.t==='trial'?7:o.t==='giant'||o.t==='gate'||o.t==='windmill'||o.t==='balloon'?6:o.t==='stall'?3:(o.t==='xmark'||o.t==='cage')?12:NS.has(o.t)?-2:0)}
   for(const a of animals)if(Math.abs(a.x-px)<30&&Math.abs(a.y-py)<30)consider('animal',a,a.x,a.y-4,2);
   for(const v of villagers)if(v.state==='out'&&Math.abs(v.x-px)<30&&Math.abs(v.y-py)<30)consider('vil',v,v.x,v.y-5,3);
   for(const n of npcs)if(Math.abs(n.x-px)<30&&Math.abs(n.y-py)<30)consider('npc',n,n.x,n.y-5,3);
@@ -1462,7 +1475,7 @@ function genMission(vi,giver,chief,src){
       m.title=two?'Destruir 2 focos de fantasmas':'Destruir um foco de fantasmas';m.desc=`${two?'Focos':'Foco'} ${where(sps[0].x,sps[0].y)}${two?` e ${where(sps[1].x,sps[1].y)}`:''}. Você precisa estar lá quando ${two?'cada um':'ele'} cair.`;
       m.line=`${['Nossos batedores viram uma coisa.','Os aldeões estão com medo.','Preciso da sua ajuda.'][ri(3)]} ${two?'Dois focos de fantasmas surgiram':'Um foco de fantasmas surgiu'} ${where(sps[0].x,sps[0].y)}${two?', e outro mais longe':''}. Pode destruir${two?' os dois':''}?`;
       m.make=()=>{sps.forEach(sp=>{if(!objGrid[sp.y*MW+sp.x])addObj({t:'foco',x:sp.x,y:sp.y,oid:m.id})});refreshCaches()}}}
-  if(type==='tesouro'){const sp=randSpot(v.cx,v.cy,28,95);if(!sp)type=m.type='caca';else{m.tx=sp.x;m.ty=sp.y;m.title='Mapa do tesouro';m.desc=`Um X marca o lugar ${where(sp.x,sp.y)}. Cave lá e depois volte para contar.`;m.line=`Achei este mapa velho no fundo do baú. Tem um X desenhado ${where(sp.x,sp.y)}. Cave lá e me conte o que achou!`;m.make=()=>addObj({t:'xmark',x:sp.x,y:sp.y,oid:m.id})}}
+  if(type==='tesouro'){const sp=randSpot(v.cx,v.cy,28,95);if(!sp)type=m.type='caca';else{m.tx=sp.x;m.ty=sp.y;m.title='Mapa do tesouro';m.desc=`Um X marca o lugar ${where(sp.x,sp.y)}. Cave lá e depois volte para contar.`;m.line=`Achei este mapa velho no fundo do baú. Tem um X desenhado ${where(sp.x,sp.y)}. Cave lá e me conte o que achou!`;m.make=()=>{clearMark(sp.x,sp.y);addObj({t:'xmark',x:sp.x,y:sp.y,oid:m.id})}}}
   if(type==='acampamento'||type==='resgate'){const c=camps[ri(camps.length)];m.vi2=c.idx;m.tx=c.cx;m.ty=c.cy;
     if(type==='acampamento'){const n=hard?8:5;m.n=n;m.cap=false;m.title=`Atacar ${c.name}`;m.desc=`Derrote o Capitão Malvado e ${n} Coelhos Malvados em ${c.name}, ${where(c.cx,c.cy)}. Eles não se rendem.`;m.line=`Os Coelhos Malvados de ${c.name} ajudam os fantasmas a atacar nossas plantações. Eles nunca vão mudar... mas dá para dar uma lição neles! Derrote o capitão e ${n} malvados.`;rw.xp+=35;rw.item=1}
     else{const pn=PRISONERS[ri(PRISONERS.length)];let cp=null;for(let k=0;k<80&&!cp;k++){const x=c.cx+ri(11)-5,y=c.cy+ri(9)-4;const id=y*MW+x;if(!objGrid[id]&&ground[id]!==G_WATER&&ground[id]!==G_MOUNT&&x!==c.cx&&y!==c.cy)cp={x,y}}if(!cp)cp={x:c.cx+3,y:c.cy-2};
@@ -1496,7 +1509,8 @@ function completeMission(m){const i=G.missions.indexOf(m);if(i<0)return;G.missio
   if(rw.map){const t2=makeTreasure('Recompensa');if(t2){G.missions.push(t2);extra+=' E um mapa do tesouro!'}}
   G.mdone=(G.mdone||0)+1;if(G.track===m.id)G.track=G.missions[0]?G.missions[0].id:0;HC.q=null;sfx('purify');toast(`Recompensa recebida: ${m.title.replace('★ ','')}! +${rw.xp||0} XP${extra}`,'gold');setTimeout(()=>banter('mission'),1600)}
 function abandonMission(m){const i=G.missions.indexOf(m);if(i<0)return;G.missions.splice(i,1);objects.filter(o=>o.oid===m.id&&(o.t==='xmark'||o.t==='cage')).forEach(removeObj);if(G.escort&&G.escort.mid===m.id){G.escort=null;escortE=null}ghosts=ghosts.filter(g=>!(g.src&&g.src.raid&&g.src.mid===m.id));if(G.track===m.id)G.track=G.missions[0]?G.missions[0].id:0;HC.q=null}
-function makeTreasure(giver){const w=wpos(P);const sp=randSpot(Math.floor(w.x/T),Math.floor(w.y/T),20,75);if(!sp)return null;const id=++G.mid;addObj({t:'xmark',x:sp.x,y:sp.y,oid:id});
+function clearMark(x,y){for(let j=-1;j<=2;j++)for(let i=-1;i<=1;i++){if(!i&&!j)continue;const X=x+i,Y=y+j;if(X<2||Y<2||X>=MW-2||Y>=MH-2)continue;const o=objGrid[Y*MW+X];if(o&&(o.t==='tree'&&!o.edge||o.t==='rock'||o.t==='cactus'||o.t==='stump'))removeObj(o)}}
+function makeTreasure(giver){const w=wpos(P);const sp=randSpot(Math.floor(w.x/T),Math.floor(w.y/T),20,75);if(!sp)return null;const id=++G.mid;clearMark(sp.x,sp.y);addObj({t:'xmark',x:sp.x,y:sp.y,oid:id});
   return{id,type:'tesouro',giver,vi:0,self:true,tx:sp.x,ty:sp.y,title:'Mapa do tesouro',desc:`Um X marca o lugar em ${BIOMES[biome[sp.y*MW+sp.x]].name}, ao ${dirTxt(sp.x-w.x/T,sp.y-w.y/T)} de onde você achou o mapa.`,rw:{xp:25+(G.land||0)*10,res:{}}}}
 function digTreasure(o){const m=missionOf(o);if(!m)return;removeObj(o);sfx('build');burst(ocx(o),ocy(o),'#d9b48f',20,50,.8);const found=[];const add=(k,n)=>{G.inv[k]+=n;found.push([k,resTxt(k,n)])};
   add(['crystal','honey','shell','wool'][ri(4)],2+ri(3));add(['stone','wood','herb'][ri(3)],4+ri(4));const it=Math.random()<.4?pickItem(G.nights+2):null;if(it){grant(it);found.push([itemIcon(it),ITEM_NAMES[it],true])}
@@ -1793,7 +1807,7 @@ function update(dt){
   if(G.food<=0){G.food=0;G.starveT+=dt;if(G.starveT>12){G.starveT=0;P.hp=Math.max(.5,P.hp-1);toast('Que fome! Colete ervinhas, cogumelos ou mel.','warn');sfx('deny')}}
   // hints
   hintT-=dt;if(hintT<=0&&hintStep<7){const H=['Junte pedras no chão e derrube árvores para conseguir madeira.','Com 5 pedras perto de uma árvore, toque em Construir para cavar uma toca.','Você pode entrar nas tocas! Lá dentro há baús com itens.','Há uma vila de coelhos ao norte. O chefe dela tem missões para você!','Toque em "Poder" (tecla R) para usar o Grito de Coragem do Moka: ele empurra e atordoa os fantasmas por perto.','Fantasmas branco e azul caem com pedradas. Para os outros, você vai precisar de armas melhores.','Cuidado: os fantasmas machucam bastante e comida cura só um pouquinho. Descanse na sua toca para recuperar a vida.'];toast(H[hintStep]);hintStep++;hintT=12}
-  chopCd=Math.max(0,chopCd-dt);
+  chopCd=Math.max(0,chopCd-dt);guideT-=dt;if(guideT<=0){guideT=.5;guideInfo=calcGuide();if(G.guide&&!P.inRoom)edgeHint()}
   for(const k in G.powCd)G.powCd[k]=Math.max(0,G.powCd[k]-dt);G.radarT=Math.max(0,(G.radarT||0)-dt);G.shadowT=Math.max(0,(G.shadowT||0)-dt);if(G.shadowT>0&&P.id!=='amora')G.shadowT=0;
   banterCd=Math.max(0,banterCd-dt);banterT-=dt;if(banterT<=0){banterT=80+Math.random()*70;banter(isNight()?'nightidle':'idle')}
   if(G.food<20&&!G.hungryB){G.hungryB=1;banter('hungry')}else if(G.food>50)G.hungryB=0;
@@ -2034,7 +2048,7 @@ function renderWorld(now){
     const hole=(x,y,r,s=1)=>{if(x<-r||y<-r||x>bw+r||y>bh+r)return;const g=dctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(0,0,0,${s})`);g.addColorStop(.55,`rgba(0,0,0,${s*.65})`);g.addColorStop(1,'rgba(0,0,0,0)');dctx.fillStyle=g;dctx.fillRect(x-r,y-r,r*2,r*2)};
     const lm=G.relics.esporo?1.4:1;
     party.forEach(m=>{if(!m.inRoom)hole(m.x-camX,m.y-8-camY,(m.down?18:m===P?(G.lantern?70:46)+Math.sin(t*3)*1.5:(G.lantern?50:34))*lm)});
-    for(const [,k,o] of list){if(k)continue;if(o.t==='home')hole(ocx(o)-camX,ocy(o)+2-camY,o.lvl===2?54:28,.9);else if(o.t==='lamp')hole(ocx(o)-camX,ocy(o)-6-camY,48,.95);else if(o.t==='glamp')hole(ocx(o)-camX,ocy(o)-6-camY,30,.6);else if(o.t==='vhome'&&!o.haunted)hole(ocx(o)+6-camX,ocy(o)-14-camY,14,.8);else if(o.t==='crystal')hole(ocx(o)-camX,ocy(o)-4-camY,10,.5);else if(o.t==='star')hole(ocx(o)-camX,ocy(o)-6-camY,22,.9);else if(o.t==='cauldron'||o.t==='fring')hole(ocx(o)-camX,ocy(o)-4-camY,18,.55);else if(o.t==='tenda')hole(ocx(o)-camX,ocy(o)-6-camY,12,.35);else if(o.t==='whut')hole(ocx(o)+6-camX,ocy(o)-14-camY,16,.8);else if(o.t==='foco'||o.t==='trial')hole(ocx(o)-camX,ocy(o)-4-camY,22,.45);else if(o.t==='shrine'||o.t==='gate')hole(ocx(o)-camX,ocy(o)-10-camY,26,.5)}
+    for(const [,k,o] of list){if(k)continue;if(o.t==='home')hole(ocx(o)-camX,ocy(o)+2-camY,o.lvl===2?54:28,.9);else if(o.t==='lamp')hole(ocx(o)-camX,ocy(o)-6-camY,48,.95);else if(o.t==='glamp')hole(ocx(o)-camX,ocy(o)-6-camY,30,.6);else if(o.t==='vhome'&&!o.haunted)hole(ocx(o)+6-camX,ocy(o)-14-camY,14,.8);else if(o.t==='crystal')hole(ocx(o)-camX,ocy(o)-4-camY,10,.5);else if(o.t==='xmark')hole(ocx(o)-camX,ocy(o)-8-camY,20,.8);else if(o.t==='star')hole(ocx(o)-camX,ocy(o)-6-camY,22,.9);else if(o.t==='cauldron'||o.t==='fring')hole(ocx(o)-camX,ocy(o)-4-camY,18,.55);else if(o.t==='tenda')hole(ocx(o)-camX,ocy(o)-6-camY,12,.35);else if(o.t==='whut')hole(ocx(o)+6-camX,ocy(o)-14-camY,16,.8);else if(o.t==='foco'||o.t==='trial')hole(ocx(o)-camX,ocy(o)-4-camY,22,.45);else if(o.t==='shrine'||o.t==='gate')hole(ocx(o)-camX,ocy(o)-10-camY,26,.5)}
     for(const q of parts)if(q.fly&&!q.room)hole(q.x-camX,q.y-camY,5,.7);
     for(const p of projs)hole(p.x-camX,p.y-camY,8,.6);
     for(const p of eprojs)hole(p.x-camX,p.y-camY,7,.6);
@@ -2057,8 +2071,10 @@ function renderWorld(now){
     else if(p.kind==='spark'){ctx.fillStyle='#d4f5dc';ctx.fillRect(x-1,y-1,3,3);ctx.fillStyle='#58b06c';ctx.fillRect(x,y,1,1)}
     else if(p.kind==='carrot'){ctx.fillStyle='#e07a3e';ctx.fillRect(x-2,y-1,4,2);ctx.fillStyle='#7cc68a';ctx.fillRect(x-3,y-1,1,1)}}
   for(const p of eprojs){const x=Math.round(p.x-camX),y=Math.round(p.y-camY);if(p.kind==='orb'){ctx.fillStyle='rgba(179,140,255,.4)';ctx.fillRect(x-3,y-3,7,7);ctx.fillStyle='#b38cff';ctx.fillRect(x-2,y-2,5,5);ctx.fillStyle='#fff';ctx.fillRect(x-1,y-1,2,2)}else{ctx.fillStyle='#5a3a5a';ctx.fillRect(x-1,y-1,3,3)}}
+  for(const o of G.missions.length?objects:[]){if(o.t!=='xmark'||!missionOf(o))continue;const cx=ocx(o)-camX,by=o.y*T+16-camY;if(cx<-20||by<-30||cx>bw+20||by>bh+30)continue;
+    ctx.drawImage(XMARK,cx-6,by-12);const yy=by-30+Math.round(Math.sin(t*5)*2);ctx.fillStyle='#6b5a7a';ctx.fillRect(cx-3,yy-1,7,7);ctx.fillStyle=Math.floor(t*3)%2?'#f7d774':'#fff3b0';ctx.fillRect(cx-2,yy,5,5);ctx.fillStyle='#6b5a7a';ctx.fillRect(cx,yy+6,1,4)}
   drawParticles(t,null);
-  drawCompass(t);
+  drawCompass(t);drawGuideArrow(t);
   drawMarker(t);
   if(G.det===3){let ng=null,nd=DETECTORS[3].range;for(const g of ghosts){if(g.flee)continue;const d=Math.hypot(g.x-P.x,g.y-P.y);if(d<nd&&g.vis<.5){nd=d;ng=g}}
     if(ng){const a=Math.atan2(ng.y-P.y,ng.x-P.x),ax=P.x-camX+Math.cos(a)*22,ay=P.y-8-camY+Math.sin(a)*22;ctx.fillStyle=Math.floor(t*4)%2?'#ff8fb0':'#ffd0dd';
@@ -2143,6 +2159,7 @@ function hud(){
   {const C=CHARS[P.id],pcd=Math.ceil(G.powCd[P.id]||0);set('pow',P.id+':'+pcd,()=>{$('powTxt').textContent=pcd>0?pcd+'s':C.power.short;setIco($('powIco'),C.power.ico);$('bPow').classList.toggle('off',pcd>0);$('bPow').title=C.power.name+': '+C.power.desc})}
   const tm=G.missions.find(m=>m.id===G.track);let qt='';if(tm){const pr=progTxt(tm);let loc='';if(tm.tx!=null){const w=wpos(P),dx=tm.tx*T+8-w.x,dy=tm.ty*T+8-w.y,d=Math.round(Math.hypot(dx,dy)/T);loc=d<4?' · aqui!':` · ${d} passos ao ${dirTxt(dx,dy)}`}qt=(tm.done?`✓ Volte para ${tm.giver}`:tm.title+(pr?` (${pr})`:''))+loc}
   set('q',qt,v=>{$('quest').hidden=!v;$('questTxt').textContent=v});
+  set('guide',G.guide?guideInfo.txt:'',v=>{$('guide').hidden=!v;$('guideTxt').textContent=v});
   updParty();
   set('toastTop',Math.round($('hud').getBoundingClientRect().bottom),v=>$('toasts').style.top=(v+8)+'px')}
 
@@ -2152,7 +2169,7 @@ function showMsg(title,text,btns){uiOpen='msg';$('msgTitle').textContent=title;$
 function closeMsg(){$('msg').hidden=true;uiOpen=null}
 function openPause(){if(uiOpen)return;uiOpen='pause';atkHeld=false;
   $('pauseInfo').textContent=`Terras ${(G.land||0)+1} · Dia ${G.dayNum} · Missões ${G.missions.length} · ${G.nights} noite${G.nights===1?'':'s'} · Nível ${G.lvl} · Maldição ${Math.round(G.curse)}% · Relíquias ${relicCount()}/4 · ${BIOMES[biomeAtP()].name}`;
-  $('pNew').textContent='Nova floresta';$('pNew').dataset.c='';$('pause').hidden=false;$('pResume').focus();saveGame()}
+  $('pGuide').textContent='Guia: '+(G.guide?'sim':'não');$('pNew').textContent='Nova floresta';$('pNew').dataset.c='';$('pause').hidden=false;$('pResume').focus();saveGame()}
 function closePause(){$('pause').hidden=true;uiOpen=null}
 function openBag(){if(uiOpen&&uiOpen!=='bag')return;if(uiOpen==='bag'){closeBag();return}uiOpen='bag';
   const rg=$('bagRes');rg.innerHTML='';RES.forEach(k=>{const s=document.createElement('span');s.innerHTML=`<i class="ico"></i>${G.inv[k]} ${RES_NAMES[k][G.inv[k]===1?0:1]}`;setIco(s.firstChild,k);
@@ -2177,13 +2194,69 @@ function openBag(){if(uiOpen&&uiOpen!=='bag')return;if(uiOpen==='bag'){closeBag(
     add(gl,'home',f.met?`${CHARS[id].name} (${vn})`:'Amigo desconhecido',f.met?(id==='nimbo'?`Quer 5 ervinhas para vir junto. Você tem ${G.inv.herb}.`:`Quer ver você derrotar 8 fantasmas. Faltam ${Math.max(0,8-(G.kills-f.q))}.`):`Dizem que mora alguém corajoso na ${vn}.`)});
   $('bagCurse').style.width=G.curse+'%';
   const cl=cursedLeft();$('bagGoal').textContent=`Maldição em ${Math.round(G.curse)}%. Tocas amaldiçoadas restantes: ${cl}. ${villages[5].name}: ${G.gv.state==='freed'?'libertada':G.gv.state==='boss'?'o Rei Fantasma espera':'tomada por fantasmas'}. Cada fantasma derrotado enfraquece a maldição, mas para zerá-la é preciso purificar as tocas e libertar a ${villages[5].name}. Acampamentos de Coelhos Malvados (não se rendem): ${villages.filter(v=>v.evil).length}. Tendas de infiltrados: ${tents.length}. Fantasmas derrotados: ${G.kills}. Missões concluídas: ${G.mdone||0}. Nível ${G.lvl} (${G.xp}/${xpNeed(G.lvl)} XP). Terras ${(G.land||0)+1}.`;
-  drawMap();$('bag').hidden=false;$('bagClose').focus()}
+  fillCompass();$('mapS').classList.toggle('on',G.mapMode!=='d');$('mapD').classList.toggle('on',G.mapMode==='d');drawMap();$('bag').hidden=false;$('bagClose').focus()}
 function closeBag(){$('bag').hidden=true;uiOpen=null}
+const DIR8=[['norte',0,-1],['nordeste',1,-1],['leste',1,0],['sudeste',1,1],['sul',0,1],['sudoeste',-1,1],['oeste',-1,0],['noroeste',-1,-1]];
+function rayBiome(x0,y0,dx,dy,max){const b0=biome[y0*MW+x0],n=Math.hypot(dx,dy);let run=0,cand=-1;for(let s=2;s<=max;s++){const x=Math.round(x0+dx/n*s),y=Math.round(y0+dy/n*s);if(x<2||y<2||x>=MW-2||y>=MH-2)return{edge:s};const b=biome[y*MW+x];if(b!==b0){if(b===cand)run++;else{cand=b;run=1}if(run>=3)return{b,d:s-2}}else{cand=-1;run=0}}return null}
+const bName=b=>G.biomes[b]?BIOMES[b].name:'bioma novo (?)';
+let guideT=0,edgeT=6,guideInfo={txt:'',tx:null,ty:null};const edgeSeen={};
+const SRC={wood:['tree','árvore','Toque em "Cortar árvore" algumas vezes.'],stone:['rock','pedra','Toque em "Pegar pedra".'],herb:['herb','ervinha','Toque em "Pegar ervinha".'],crystal:['crystal','cristal','Toque em "Minerar cristal".'],shell:['shell','concha','Toque em "Pegar concha".'],mush:['mushc','cogumelo','Toque em "Pegar cogumelo".'],honey:['hive','colmeia','Toque em "Pegar mel".'],wool:['sheep','ovelha','Chegue perto e toque em "Pegar lã".']};
+function nearestSrc(k){const S=SRC[k];if(!S)return null;const w=wpos(P);let best=null,bd=80*T;
+  if(S[0]==='sheep'){for(const a of animals)if(a.type==='sheep'&&a.wool){const d=Math.hypot(a.x-w.x,a.y-w.y);if(d<bd){bd=d;best={x:Math.floor(a.x/T),y:Math.floor((a.y-6)/T)}}}return best}
+  for(const o of objects){if(o.t!==S[0]||(o.t==='tree'&&o.edge)||(o.t==='hive'&&o.cd>0))continue;const d=Math.hypot(ocx(o)-w.x,ocy(o)-w.y);if(d<bd){bd=d;best={x:o.x,y:o.y}}}return best}
+function srcGuide(k,need){const S=SRC[k],s=nearestSrc(k),w=wpos(P),px=w.x/T,py=w.y/T;const falta=`Falta${need>1?'m':''} ${resTxt(k,need)}.`;
+  if(!s)return{txt:`${falta} Não há ${S[1]} por perto: explore outros biomas${k==='crystal'?' (cavernas e montanhas têm cristais)':''} ou troque no mercado de uma vila.`,tx:null};
+  const d=Math.round(Math.hypot(s.x-px,s.y-py));return{txt:d<3?`${falta} Tem ${S[1]} aqui! ${S[2]}`:`${falta} ${S[1][0].toUpperCase()+S[1].slice(1)} mais perto: ${d} passos ao ${dirTxt(s.x-px,s.y-py)}. Siga a seta verde.`,tx:s.x,ty:s.y}}
+function roomGuide(){const r=P.inRoom;if(r.kind==='trial')return(r.o.relic&&G.relics[r.o.relic])?'O santuário está calmo. Saia pela porta de baixo.':'Passe pelos espinhos quando estiverem baixos, desvie dos fantasmas e chegue ao pedestal lá em cima.';
+  if(r.kind==='home')return'Sua toca: toque em Construir para fazer móveis. A vida volta aos pouquinhos aqui dentro.';if((r.kind==='burrow'||r.kind==='cave')&&!r.o.looted)return'Tem um baú no fundo! Chegue perto e toque em "Abrir baú".';if(r.kind==='cursed'&&!r.o.revealed)return'Algo estranho aqui... fique atento e saia se precisar.';return'Saia pela porta de baixo.'}
+function calcGuide(){if(!G.guide)return{txt:'',tx:null};if(P.inRoom)return{txt:roomGuide(),tx:null};
+  const w=wpos(P),px=w.x/T,py=w.y/T;const tm=G.missions.find(m=>m.id===G.track);
+  if(tm){const v=villages[tm.vi];
+    if(tm.done)return{txt:`Pronto! Volte para ${tm.giver}${v&&!tm.self?` na ${v.name}`:''} e toque em "Receber". Siga a seta amarela.`,tx:null};
+    if(tm.type==='entrega'){const have=G.inv[tm.k];if(have<tm.n)return srcGuide(tm.k,tm.n-have);return{txt:`Você já tem ${resTxt(tm.k,tm.n)}! Leve para ${tm.giver} e toque em "Entregar". Siga a seta amarela.`,tx:null}}
+    if(tm.type==='caca')return{txt:`Derrote ${GPLURAL[tm.gt]} você mesmo. ${tm.gt==='malvado'?'Eles ficam nos acampamentos e tendas (pontos vermelhos no mapa).':'Eles aparecem mais à noite, longe das vilas.'}`,tx:null};
+    if(tm.type==='desafio')return{txt:'Derrote inimigos você mesmo antes do amanhecer. A noite é a melhor hora!',tx:null};
+    if(tm.type==='resgate'&&G.escort&&G.escort.mid===tm.id)return{txt:`${G.escort.pn} está seguindo você. Leve até a ${v.name} pela seta amarela.`,tx:null};
+    const d=tm.tx!=null?Math.hypot(tm.tx-px,tm.ty-py):0;
+    if(d>=5)return{txt:`Siga a seta amarela até o lugar da missão (${Math.round(d)} passos). ${({tesouro:'Lá você vai ver um X com uma plaquinha amarela.',foco:'Lá tem um redemoinho roxo de fantasmas.',resgate:'Lá tem uma jaula num acampamento malvado.',infiltrados:'Lá tem uma tenda roxa escura.',acampamento:'É um acampamento de Coelhos Malvados: vá preparado.',patrulha:'Esteja lá quando a noite cair.',reliquia:'A relíquia é guardada por um desafio.',explorar:'É um lugar novo da floresta.'})[tm.type]||''}`,tx:null};
+    switch(tm.type){case'tesouro':return{txt:'Você chegou! Fique perto do X e toque em "Cavar".',tx:null};
+      case'foco':return{txt:'Os fantasmas saem do redemoinho roxo. Derrote todos você mesmo para destruí-lo.',tx:null};
+      case'resgate':return{txt:'Fique de frente para a jaula e toque em "Abrir jaula". Depois leve o prisioneiro para casa.',tx:null};
+      case'infiltrados':return{txt:'Derrote todos os Coelhos Malvados que saem da tenda.',tx:null};
+      case'acampamento':return{txt:'Derrote o Capitão Malvado (o de coroa) e os outros malvados.',tx:null};
+      case'patrulha':return{txt:isNight()?'Os invasores vão chegar! Fique na vila e derrote todos.':'Espere aqui na vila até a noite cair.',tx:null};
+      case'reliquia':{const o=objects.find(q=>q.relic===tm.rk);if(o&&o.t==='giant'){if(o.guard&&!o.guardDone)return{txt:'Derrote o Guardião da Relíquia. Ele só sente espada ou varinha!',tx:null};if(!o.ladder)return G.inv.wood>=5?{txt:'Fique perto da árvore gigante e toque em Construir → Escada.',tx:null}:srcGuide('wood',5-G.inv.wood);return{txt:'Toque em "Subir" na árvore gigante para pegar a relíquia.',tx:null}}
+        if(o&&o.guard&&!o.guardDone)return{txt:'Derrote o Guardião que bloqueia o santuário.',tx:null};return{txt:'Entre no santuário e passe pelos espinhos quando estiverem baixos.',tx:null}}
+      default:return{txt:'Você chegou!',tx:null}}}
+  const nb=npcs.find(n=>n.id==='nimbo'&&G.friends.nimbo.met);if(nb){if(G.inv.herb<5){const g=srcGuide('herb',5-G.inv.herb);g.txt='Para o Nimbo: '+g.txt;return g}return{txt:'Você tem 5 ervinhas! Leve para o Nimbo (seta verde).',tx:Math.floor(nb.x/T),ty:Math.floor(nb.y/T)}}
+  if(!objects.some(o=>o.t==='home')){if(G.inv.stone<5){const g=srcGuide('stone',5-G.inv.stone);g.txt='Para cavar sua toca: '+g.txt;return g}return{txt:'Você tem 5 pedras! Fique perto de uma árvore e toque em Construir → Toca na árvore.',tx:null}}
+  const vs=villages.filter(v=>v.kind==='vila');const v0=vs.reduce((a,b)=>Math.hypot(a.cx-px,a.cy-py)<Math.hypot(b.cx-px,b.cy-py)?a:b);
+  return{txt:`Sem missão agora. Fale com o chefe (coelho de coroa) da ${v0.found?v0.name:'vila mais perto'} para pegar uma. Siga a seta verde.`,tx:v0.cx,ty:v0.cy}}
+function edgeHint(){edgeT-=.5;if(edgeT>0)return;edgeT=4;const w=wpos(P),px=Math.floor(w.x/T),py=Math.floor(w.y/T),now=G.playTime;
+  for(const n of npcs){const v=villages[n.vil],f=G.friends[n.id];if(f.met||edgeSeen['f'+n.id])continue;const d=Math.hypot(v.cx-px,v.cy-py);if(d<35){edgeSeen['f'+n.id]=1;toast(`Ao ${dirTxt(v.cx-px,v.cy-py)} fica a ${v.name}. Dizem que ${n.id==='nimbo'?'o Nimbo, um coelho cinza,':'a Amora, uma coelha preta,'} mora lá!`,'gold');edgeT=20;return}}
+  for(const k of [0,2,4,6]){const [nm,dx,dy]=DIR8[k];const r=rayBiome(px,py,dx,dy,9);if(r&&r.b!=null){const key=r.b+nm;if(edgeSeen[key]&&now-edgeSeen[key]<150)continue;edgeSeen[key]=now;toast(G.biomes[r.b]?`Ao ${nm} começa ${BIOMES[r.b].name}.`:`Ao ${nm} começa um bioma que você ainda não conhece!`);edgeT=20;return}}}
+function drawGuideArrow(t){if(!G.guide||guideInfo.tx==null||P.inRoom)return;const gx=guideInfo.tx*T+8,gy=guideInfo.ty*T+8,dx=gx-P.x,dy=gy-P.y;
+  if(Math.hypot(dx,dy)<3*T){const yy=Math.round(gy-26-camY+Math.sin(t*5)*2),xx=Math.round(gx-camX);ctx.fillStyle='#2f6f45';ctx.fillRect(xx-3,yy-1,7,4);ctx.fillRect(xx-1,yy+3,3,2);ctx.fillStyle='#9fe0b0';ctx.fillRect(xx-2,yy,5,2);ctx.fillRect(xx,yy+2,1,2);return}
+  const a=Math.atan2(dy,dx),ax=P.x-camX+Math.cos(a)*22,ay=P.y-8-camY+Math.sin(a)*22;ctx.fillStyle=Math.floor(t*3)%2?'#58b06c':'#9fe0b0';
+  ctx.beginPath();ctx.moveTo(ax+Math.cos(a)*5,ay+Math.sin(a)*5);ctx.lineTo(ax+Math.cos(a+2.5)*4,ay+Math.sin(a+2.5)*4);ctx.lineTo(ax+Math.cos(a-2.5)*4,ay+Math.sin(a-2.5)*4);ctx.fill()}
+function fillCompass(){const w=wpos(P),px=clamp(Math.floor(w.x/T),2,MW-3),py=clamp(Math.floor(w.y/T),2,MH-3),b0=biome[py*MW+px];const box=$('bagCompass');box.innerHTML='';
+  [7,0,1,6,-1,2,5,4,3].forEach(k=>{const d=document.createElement('div');if(k<0){d.className='me';d.innerHTML='<b>você está em</b>';d.append(BIOMES[b0].name)}else{const [nm,dx,dy]=DIR8[k];const r=rayBiome(px,py,dx,dy,150);d.innerHTML=`<b>${nm}</b>`;d.append(!r?`mais ${BIOMES[b0].name}`:r.edge?`fim da floresta · ${r.edge} passos`:`${bName(r.b)} · ${r.d} passos`)}box.appendChild(d)});
+  const dl=$('bagDirs');dl.innerHTML='';const add=(ic,title,desc)=>{const e=document.createElement('div');e.className='bitem';e.innerHTML='<i class="ico"></i><b></b><small></small>';if(typeof ic==='string')setIco(e.firstChild,ic);else e.firstChild.replaceWith(ic);e.querySelector('b').textContent=title;e.querySelector('small').textContent=desc;dl.appendChild(e)};
+  const where=(x,y)=>{const d=Math.round(Math.hypot(x-px,y-py));return d<4?'Aqui pertinho':`${d} passos ao ${dirTxt(x-px,y-py)}`};
+  const face=id=>{const c=mk(12,12);c.getContext('2d').drawImage(CHARS[id].set.d[0],0,0);return c};
+  npcs.forEach(n=>{const v=villages[n.vil],f=G.friends[n.id],C=CHARS[n.id];add(face(n.id),`${f.met?C.name:'Amigo para conhecer'} · ${v.name}`,`${where(v.cx,v.cy)}. ${f.met?(n.id==='nimbo'?`Ele quer 5 ervinhas (você tem ${G.inv.herb}).`:`Ela quer ver você derrotar 8 fantasmas (faltam ${Math.max(0,8-(G.kills-f.q))}).`):`Lá você vai encontrar ${n.id==='nimbo'?'o Nimbo, um coelho cinza de orelhas atentas':'a Amora, uma coelha preta e corajosa'}.`}`)});
+  party.forEach(m=>{if(m===P)return;const q=wpos(m),mx=Math.floor(q.x/T),my=Math.floor(q.y/T);if(Math.hypot(mx-px,my-py)<6&&!m.down)return;add(face(m.id),`${CHARS[m.id].name} ${m.down?'desmaiou':m.mode==='wait'?'está esperando':'está longe'}`,`${where(mx,my)}.${m.down?' Vá até lá e ajude!':''}`)});
+  const tm=G.missions.find(m=>m.id===G.track);if(tm&&tm.tx!=null)add(MICO[tm.type]||'star',`Missão: ${tm.title.replace('★ ','')}`,`${where(tm.tx,tm.ty)}.${tm.done?' Pronta para receber!':''}`);
+  let hv=null,hd=1e9;objects.forEach(o=>{if(o.t==='home'){const d=Math.hypot(o.x-px,o.y-py);if(d<hd){hd=d;hv=o}}});if(hv)add('home','Sua toca mais perto',`${where(hv.x,hv.y)}.`);
+  let vv=null,vd=1e9;villages.forEach(v=>{if((v.kind==='vila'||v.kind==='grove')&&v.found){const d=Math.hypot(v.cx-px,v.cy-py);if(d<vd){vd=d;vv=v}}});if(vv)add('home',`Lugar seguro mais perto: ${vv.name}`,`${where(vv.cx,vv.cy)}.`);
+  const unk=villages.filter(v=>v.kind==='vila'&&!v.found);if(unk.length){const v=unk.reduce((a,b)=>Math.hypot(a.cx-px,a.cy-py)<Math.hypot(b.cx-px,b.cy-py)?a:b);add('star','Vila que você ainda não visitou',`Os viajantes dizem que existe uma vila uns ${Math.max(10,Math.round(Math.hypot(v.cx-px,v.cy-py)/10)*10)} passos ao ${dirTxt(v.cx-px,v.cy-py)}.`)}}
+const MAPB=['#8fd19e','#f1ecf8','#b7a3e0','#c3cbe2','#f0df8a','#f5c2b0','#8fd0c4','#6a5a8a','#d5ecfa','#f8b6d2'];
+function simpleCol(id){const g=ground[id];if(g===G_WATER||g===G_STONES)return '#8fc6ea';if(g===G_MOUNT)return ridge[id]?'#4f466a':'#9a91b3';if(g===G_PATH||g===G_BRIDGE||g===G_BRIDGEV)return '#fbeedd';if(g===G_FARM)return '#d9b48f';return MAPB[biome[id]]}
 function drawMap(){const c=$('mapCv'),x=c.getContext('2d');const img=x.createImageData(MW,MH),d=img.data;
-  for(let id=0;id<MW*MH;id++){let r=59,g=51,b=82;if(explored[id]){[r,g,b]=rgb(tileCol(id));if(corrupt[id]){r=r*.65+70*.35;g=g*.65+30*.35;b=b*.65+90*.35}}const k=id*4;d[k]=r;d[k+1]=g;d[k+2]=b;d[k+3]=255}
+  for(let id=0;id<MW*MH;id++){let r=59,g=51,b=82;if(explored[id]){[r,g,b]=rgb(G.mapMode==='d'?tileCol(id):simpleCol(id));if(corrupt[id]){r=r*.65+70*.35;g=g*.65+30*.35;b=b*.65+90*.35}}const k=id*4;d[k]=r;d[k+1]=g;d[k+2]=b;d[k+3]=255}
   x.putImageData(img,0,0);
   const dot=(px,py,col,sz=1)=>{x.fillStyle='#4a3f5c';x.fillRect(px-sz-1,py-sz-1,2*sz+3,2*sz+3);x.fillStyle=col;x.fillRect(px-sz,py-sz,2*sz+1,2*sz+1)};
-  objects.forEach(o=>{if(!explored[o.y*MW+o.x])return;let c2=null;
+  const simple=G.mapMode!=='d';objects.forEach(o=>{if(!explored[o.y*MW+o.x])return;if(simple&&o.t!=='home'&&o.t!=='tenda'&&o.t!=='balloon'&&!(o.relic&&!G.relics[o.relic]))return;let c2=null;
     if(o.t==='burrow')c2=o.purified?'#9fe0b0':(o.cursed&&(o.revealed||o.hint))?'#7a4fd1':o.looted?'#c9b6ec':'#f2a5c3';else if(o.t==='tenda')c2='#c8506e';else if(o.t==='cave')c2='#8f86ab';else if(o.t==='home')c2='#ffd27a';else if(o.t==='giant')c2=o.relic&&!G.relics[o.relic]?'#ffe066':'#2f8f5a';else if(o.t==='shrine')c2=G.relics[o.relic]?'#c9b6ec':'#ffe066';else if(o.t==='gate')c2='#b38cff';else if(o.t==='foco')c2='#b38cff';else if(o.t==='trial')c2=o.done?'#c9b6ec':'#9fd8e8';else if(o.t==='balloon')c2='#f6b7c9';
     if(c2)dot(o.x,o.y,c2)});
   villages.forEach(v=>{if(!v.found&&!(v.kind==='grove'&&explored[v.cy*MW+v.cx]))return;dot(v.cx,v.cy,v.ghost&&G.gv.state!=='freed'?'#5a2a6a':v.evil?'#a02040':v.kind==='grove'?'#5fb8a8':'#ff8fb0',2)});
@@ -2259,7 +2332,7 @@ function toggleSound(){A.on=!A.on;$('pSnd').textContent='Som: '+(A.on?'sim':'nã
 
 /* ---------- loop ---------- */
 let last=performance.now();
-function frame(now){
+function frame(now){lastFrameT=performance.now();
   const dt=Math.min(.05,(now-last)/1000);last=now;
   if(!uiOpen)update(dt);
   render(now);if(!$('hud').hidden)hud();
@@ -2288,7 +2361,16 @@ addEventListener('keydown',e=>{
   if(e.code.startsWith('Arrow'))e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyF'||e.code==='KeyJ')atkHeld=false});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;atkHeld=false});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){if(!uiOpen)openPause();saveGame()}});
+let lastFrameT=performance.now();
+function sleepAudio(){try{if(A.ctx&&A.ctx.state==='running')A.ctx.suspend()}catch(e){}}
+function wakeAudio(){try{if(A.ctx&&A.on&&!document.hidden&&A.ctx.state!=='running')A.ctx.resume()}catch(e){}}
+function goBackground(){if(G&&uiOpen!=='start'){if(!uiOpen)openPause();saveGame()}sleepAudio()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)goBackground();else wakeAudio()});
+['pagehide','freeze','pause'].forEach(ev=>{document.addEventListener(ev,goBackground);window.addEventListener(ev,goBackground)});
+['pageshow','resume','focus'].forEach(ev=>{document.addEventListener(ev,wakeAudio);window.addEventListener(ev,wakeAudio)});
+document.addEventListener('pointerdown',wakeAudio,true);
+// fallback: if the screen stops drawing (app in background), silence the music
+setInterval(()=>{if(performance.now()-lastFrameT>1200)sleepAudio()},1000);
 const stick=$('stick'),knob=$('knob');let stickId=null;
 function moveStick(e){const r=stick.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const m=r.width*.38,d=Math.hypot(dx,dy);
   if(d>m){dx=dx/d*m;dy=dy/d*m}knob.style.transform=`translate(${dx}px,${dy}px)`;stickV={x:dx/m,y:dy/m};if(Math.hypot(stickV.x,stickV.y)<.18)stickV={x:0,y:0}}
@@ -2302,7 +2384,8 @@ function holdBtn(el,down,up){el.addEventListener('pointerdown',e=>{e.preventDefa
 holdBtn($('bAct'),doAction);holdBtn($('bAtk'),()=>{atkHeld=true;attack()},()=>atkHeld=false);holdBtn($('bWep'),()=>cycleWeapon(1));holdBtn($('bBuild'),openBuild);holdBtn($('bPow'),usePower);
 $('bagBtn').onclick=openBag;$('bagClose').onclick=closeBag;$('sceneBtn').onclick=sceneNext;$('quest').onclick=()=>{if(!uiOpen)openBag()};$('chestClose').onclick=closeChest;
 $('decorBtn').onclick=()=>{if(G.carry){toast('Coloque o móvel antes.');return}G.decor=!G.decor;updRoomBar();toast(G.decor?'Modo decorar: toque em Ação perto de um móvel para pegá-lo.':'Decoração salva.')};
-$('pauseBtn').onclick=openPause;$('pResume').onclick=closePause;$('pBag').onclick=()=>{closePause();openBag()};$('pSnd').onclick=toggleSound;
+$('pauseBtn').onclick=openPause;$('pResume').onclick=closePause;$('pBag').onclick=()=>{closePause();openBag()};$('pSnd').onclick=toggleSound;$('pGuide').onclick=()=>{G.guide=!G.guide;$('pGuide').textContent='Guia: '+(G.guide?'sim':'não');guideT=0;HC.guide=null};
+$('mapS').onclick=()=>{G.mapMode='s';$('mapS').classList.add('on');$('mapD').classList.remove('on');drawMap()};$('mapD').onclick=()=>{G.mapMode='d';$('mapD').classList.add('on');$('mapS').classList.remove('on');drawMap()};
 $('pNew').onclick=()=>{const b=$('pNew');if(!b.dataset.c){b.dataset.c='1';b.textContent='Toque de novo para apagar o progresso';return}closePause();newGame();saveGame();toast('Uma nova terra surgiu!')};
 $('buildClose').onclick=closeBuild;
 document.addEventListener('contextmenu',e=>e.preventDefault());

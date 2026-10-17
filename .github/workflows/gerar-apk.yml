@@ -37,6 +37,12 @@ jobs:
           rm -rf android/app/src/main/res/mipmap-anydpi-v26
           sed -i 's/android:name=".MainActivity"/android:name=".MainActivity" android:screenOrientation="portrait"/' android/app/src/main/AndroidManifest.xml
 
+      - name: Usar sempre a mesma assinatura
+        run: |
+          mkdir -p ~/.android
+          cp debug.keystore ~/.android/debug.keystore
+          sed -i "s/versionCode [0-9]*/versionCode ${{ github.run_number }}/" android/app/build.gradle
+
       - name: Compilar APK
         run: |
           cd android
